@@ -2,13 +2,12 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScriptManager } from '@/components/ScriptManager';
 import { VoiceController } from '@/components/VoiceController';
 import { TranscriptDisplay } from '@/components/TranscriptDisplay';
 import { AgentStatus } from '@/components/AgentStatus';
 import { TranscriptEntry } from '@/components/SalesDashboard';
-import { LogOut, Code, Mic, FileText } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 
 interface DeveloperDashboardProps {
   username: string;
@@ -63,27 +62,15 @@ export const DeveloperDashboard: React.FC<DeveloperDashboardProps> = ({
           </Button>
         </div>
 
-        <Tabs defaultValue="scripts" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="scripts" className="flex items-center">
-              <Code className="w-4 h-4 mr-2" />
-              Script Manager
-            </TabsTrigger>
-            <TabsTrigger value="voice" className="flex items-center">
-              <Mic className="w-4 h-4 mr-2" />
-              Voice Testing
-            </TabsTrigger>
-            <TabsTrigger value="logs" className="flex items-center">
-              <FileText className="w-4 h-4 mr-2" />
-              Live Scripts
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="scripts">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Left Column - Script Manager */}
+          <div className="space-y-6">
             <ScriptManager username={username} />
-          </TabsContent>
+          </div>
 
-          <TabsContent value="voice" className="space-y-6">
+          {/* Right Column - Voice Testing & Live Scripts */}
+          <div className="space-y-6">
+            {/* Voice Controller */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
@@ -104,6 +91,7 @@ export const DeveloperDashboard: React.FC<DeveloperDashboardProps> = ({
               </CardContent>
             </Card>
 
+            {/* Live Transcript */}
             <Card>
               <CardHeader>
                 <CardTitle>Live Transcript</CardTitle>
@@ -112,15 +100,14 @@ export const DeveloperDashboard: React.FC<DeveloperDashboardProps> = ({
                 <TranscriptDisplay transcript={transcript} />
               </CardContent>
             </Card>
-          </TabsContent>
 
-          <TabsContent value="logs">
+            {/* Live Scripts & Logs */}
             <Card>
               <CardHeader>
                 <CardTitle>Live Scripts & Logs</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm min-h-[400px]">
+                <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm min-h-[300px]">
                   <div className="space-y-2">
                     <div>[{new Date().toLocaleTimeString()}] System: Developer dashboard initialized</div>
                     <div>[{new Date().toLocaleTimeString()}] User: {username} logged in</div>
@@ -137,8 +124,8 @@ export const DeveloperDashboard: React.FC<DeveloperDashboardProps> = ({
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
-        </Tabs>
+          </div>
+        </div>
       </div>
     </div>
   );
