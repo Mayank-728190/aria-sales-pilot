@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,8 +10,11 @@ import { VoiceController } from '@/components/VoiceController';
 import { AgentStatus } from '@/components/AgentStatus';
 import { TranscriptDisplay } from '@/components/TranscriptDisplay';
 import { AgentPanel } from '@/components/AgentPanel';
+import { DeveloperAuth } from '@/components/DeveloperAuth';
+import { DeveloperDashboard } from '@/components/DeveloperDashboard';
 import { useToast } from '@/hooks/use-toast';
 import { Room, RoomEvent, Track } from 'livekit-client';
+import { Settings } from 'lucide-react';
 
 export interface SalesOffer {
   productName: string;
@@ -37,6 +39,9 @@ export interface TranscriptEntry {
 export const SalesDashboard = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [showDeveloperAuth, setShowDeveloperAuth] = useState(false);
+  const [developerUser, setDeveloperUser] = useState<string | null>(null);
+  
   const [currentOffer] = useState<SalesOffer>({
     productName: "Premium CRM Suite",
     price: "$299/month",
@@ -59,6 +64,24 @@ export const SalesDashboard = () => {
   const [userInput, setUserInput] = useState('');
   const [room, setRoom] = useState<Room | null>(null);
   const { toast } = useToast();
+
+  // Check for existing developer session
+  useEffect(() => {
+    const savedUser = localStorage.getItem('dev_user');
+    if (savedUser) {
+      setDeveloperUser(savedUser);
+    }
+  }, []);
+
+  const handleDeveloperLogin = (username: string) => {
+    setDeveloperUser(username);
+    setShowDeveloperAuth(false);
+  };
+
+  const handleDeveloperLogout = () => {
+    localStorage.removeItem('dev_user');
+    setDeveloperUser(null);
+  };
 
   const handleStartCall = async () => {
     setIsConnecting(true);
@@ -181,13 +204,38 @@ export const SalesDashboard = () => {
     setUserInput('');
   };
 
+  // Show developer dashboard if logged in
+  if (developerUser) {
+    return (
+      <DeveloperDashboard 
+        username={developerUser} 
+        onLogout={handleDeveloperLogout}
+      />
+    );
+  }
+
+  // Show developer authentication modal
+  if (showDeveloperAuth) {
+    return <DeveloperAuth onLogin={handleDeveloperLogin} />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">AI Sales Assistant</h1>
-          <p className="text-gray-600">LiveKit-powered conversational sales agent</p>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">AI Sales Assistant</h1>
+            <p className="text-gray-600">LiveKit-powered conversational sales agent</p>
+          </div>
+          <Button 
+            onClick={() => setShowDeveloperAuth(true)}
+            variant="outline"
+            size="sm"
+          >
+            <Settings className="w-4 h-4 mr-2" />
+            Developer
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
